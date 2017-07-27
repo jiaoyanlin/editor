@@ -24,7 +24,7 @@
                     <div class="tabbox clearfix">
                         <ul class="tabs" id="tabs">
                             <!-- <li class="editorlogo"><a href="javascript:void(0);" target="_blank"><span style="font-size: 25px;">师院小微</span></a></li> -->
-                            <li><a class="current" href="javascript:void(0);" tab="tab1">关注</a></li>
+                            <li><a href="javascript:void(0);" tab="tab1">关注</a></li>
                             <li><a href="javascript:void(0);" tab="tab2">标题</a></li>
                             <li><a href="javascript:void(0);" tab="tab3">正文</a></li>
                             <li><a href="javascript:void(0);" tab="tab4">分割线</a></li>
@@ -33,6 +33,7 @@
                             <li><a href="javascript:void(0);" tab="tab7">互推</a></li>
                             <li><a href="javascript:void(0);" tab="tab9">模板</a></li>
                             <li><a href="javascript:void(0);" tab="tab8">更多</a></li>
+                            <li><a class="current" href="javascript:void(0);" tab="tab10">一键排版</a></li>
                         </ul>
                         <em class="fr"></em>
                     </div>
@@ -59,7 +60,7 @@
                             </div>
                         </div>
                         <div>
-                            <div class="tab_con " id="tab1">
+                            <div class="tab_con dn" id="tab1">
                             <ul class="content clearfix">
                                 <li>
                                     <div class="itembox">
@@ -125,7 +126,7 @@
                                 </li>                                <br><br>
                             </ul>
                         </div>
-                                                    <div class="tab_con dn" id="tab2">
+                        <div class="tab_con dn" id="tab2">
                             <ul class="content clearfix">
                                 <li>
                                     <div class="itembox">
@@ -1139,7 +1140,7 @@
                                 </li>                                <br><br>
                             </ul>
                         </div>
-                                                    <div class="tab_con dn" id="tab8">
+                        <div class="tab_con dn" id="tab8">
                             <ul class="content clearfix">
                                 <li>
                                     <div class="itembox">
@@ -1170,7 +1171,32 @@
                                 </li>                                <br><br>
                             </ul>
                         </div>
-                                                </div>
+                        <div class="tab_con" id="tab10">
+                            <ul class="content onekey-list clearfix">
+                                <li class="onekey-tit">根据markdown标记排版</li>
+                                 <li>
+                                    <div class="onekey-item" title="黑白灰简洁模板" data-template="mark-simple">
+                                        <p>黑白灰简洁模板</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="onekey-item" title="黄色高贵模板" data-template="mark-yellow">
+                                        <p>黄色高贵模板</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="onekey-item" title="粉色简洁模板" data-template="mark-pink">
+                                        <p>粉色简洁模板</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="onekey-item" title="渐变背景模板" data-template="mark-linear">
+                                        <p>渐变背景模板</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                     </div>
                     <!-- <a href="#" target="_blank" title="青城老鬼">青城老鬼</a>
                     <a title="使用说明" style="COLOR: #a5a5a5; TEXT-DECORATION: underline" href="#" target="_blank"><span style="COLOR: #a5a5a5">使用说明</span></a> -->
@@ -1203,8 +1229,7 @@
 
         <div class="fullshowbox">全屏</div>
         <div class="fullhidebox">退出</div>
-        <div id="phone">手机预览</div>
-        
+        <div id="phone">手机预览</div>        
     </div>
     
 
@@ -1246,7 +1271,7 @@
     };
     $(function() {
         // 设置滚动高度
-        var tabHei = $(window).height() - $('.change-color').outerHeight();
+        var tabHei = $(window).height() - $('.change-color').outerHeight() - 40;
         $('.tab_con').height(tabHei)
         $("#phoneclose, .previewbox-wrap").on('click', function() {
             $(".previewbox-wrap").hide();
@@ -1341,18 +1366,211 @@
         });
         c.ready(function() {
             c.addListener('contentChange', function() {
-                $("#preview").html(c.getContent() + '<div><a style="font-size:12px;color:#607fa6" href="javascript:void(0);" id="post-user">阅读原文</a> <em style="color:#8c8c8c;font-style:normal;font-size:12px;">阅读 100000+</em><span class="fr"><a style="font-size:12px;color:#607fa6" href="javascript:void(0);">举报</a></span></div>');
+                $("#preview").html(c.getContent());
             });
+            // c.addListener('contentChange', function() {
+            //     $("#preview").html(c.getContent() + '<div><a style="font-size:12px;color:#607fa6" href="javascript:void(0);" id="post-user">阅读原文</a> <em style="color:#8c8c8c;font-style:normal;font-size:12px;">阅读 100000+</em><span class="fr"><a style="font-size:12px;color:#607fa6" href="javascript:void(0);">举报</a></span></div>');
+            // });
             $(".itembox").on("click", function(a) {
                 c.execCommand("insertHtml", "<div>" + $(this).html() + "</div><br />")
-            })
+            });
+            // 一键排版主题点击
+            $('.onekey-item').click(function(event) {
+                var con = c.getContent();
+                // c.setContent(con.replace(/&nbsp;/g, '')) // 清除空格
+                if (con) {
+                    // var html = $("#preview").html();
+                    var conHtml = '', template = $(this).data('template');
+                    var newStr, parentNode;
+                    if (!$(con).eq(0).hasClass('onekey-con-wrap')) {
+                        conHtml = $('<div class="onekey-wrap"><section class="onekey-con-wrap" style="padding: 10px;">' + con + '</section></div>');
+                    } else {
+                        conHtml = $('<div class="onekey-wrap">' + con + '</div>');
+                    }
+                    conHtml.find('.onekey-con-wrap').find('*').removeAttr('style').removeAttr('class').removeAttr('id'); // 清除样式
+                    switch (template) {
+                        case 'mark-simple':
+							conHtml = templateSimple(conHtml);
+                            break;
+                        case 'mark-yellow':
+                            conHtml = templateYellow(conHtml);
+                            break;
+                        case 'mark-pink':
+                            conHtml = templatePink(conHtml);
+                            break;
+                        case 'mark-linear':
+                        	conHtml = templateLinear(conHtml);
+                            break;
+                        default:
+                            console.log('找不到对应模板');
+                    }
+                    conHtml.find('p').css({
+                        color: 'rgb(62,62,62)',
+                        'margin-bottom': 15,
+                        'margin-top': 15,
+                        'text-align': 'justify',
+                        'font-size': 14,
+                        'font-family': '微软雅黑',
+                        'line-height': '20px'
+                        // 'text-indent': 30
+                    });
+                    c.setContent(conHtml.html());
+                }
+            });
         });
+        // 模板替换主要函数
+        function dealMarkdown (conHtml) {
+        	// 将已经被排版过的元素还原，便于后面再次改变样式
+			conHtml.find('section[data-tag="title"]').each(function(index, el) {
+				$(this).replaceWith('<h2>' + $(this).text() + '</h2>');
+			});
+			conHtml.find('section[data-tag="li"]').each(function(index, el) {
+				$(this).replaceWith('<p>* ' + $(this).text().replace('●', '') + '</p>');
+			});
+			conHtml.find('section[data-tag="li-ol"]').each(function(index, el) {
+				$(this).replaceWith('<p>' + $(this).text().replace('、', '.') + '</p>');
+			});
+			conHtml.find('section[data-tag="quote"]').each(function(index, el) {
+				$(this).replaceWith('<p>> ' + $(this).text() + '</p>');
+			});
+
+			var  re = /<(?!img|p|\/p|h1|\/h1|h2|\/h2|item|\/item).*?>/ig; // 保留img, p和h1,h2标签
+			var  re2 = /<p><\/p>/ig; // 移除空的p标签
+			var newStr = conHtml.html().replace(re, '').replace(re2, ''), conPText;
+			conHtml.html(newStr);
+
+			conHtml.find('p, h1, h2').each(function(index, el) {
+				conPText = $(this).text();
+				if (conPText.indexOf('## ') == 0) { // h2标题
+					$(this).replaceWith('<section data-tag="title">' + conPText.replace(/^#+/, '') + '</section>');
+				} else if (conPText.indexOf('# ') == 0) { // h1标题
+					$(this).replaceWith('<h1>' + conPText.replace('# ', '') + '</h1>');
+				} else if (conPText.indexOf('* ') == 0) {
+					$(this).replaceWith('<section data-tag="li" style="color: rgb(62, 62, 62);margin-bottom: 15px;margin-top: 15px;text-align: justify;font-size: 14px;font-family: 微软雅黑;line-height: 20px;">' + conPText.replace('*', '<span style="font-size:12px; -webkit-transform:scale(0.6);transform:scale(0.8);display:inline-block;width:24px;text-align:center;">●</span>') + '</section>');
+				} else if (/[0-9]\.\s/.test(conPText.substring(0, 2))) {
+					$(this).replaceWith('<section data-tag="li-ol" style="color: rgb(62, 62, 62);margin-bottom: 15px;margin-top: 15px;text-align: justify;font-size: 14px;font-family: 微软雅黑;line-height: 20px;"><span style="font-size:14px;display:inline-block;width:30px;text-align:center;">'+conPText.substring(0, 1)+'、</span>'+conPText.substring(2)+'</section>');
+				} else if (conPText.indexOf('> ') == 0) {
+					$(this).replaceWith('<section data-tag="quote" style="color: rgb(62, 62, 62);margin-bottom: 15px;margin-top: 15px;text-align: justify;font-size: 15px;font-family: 微软雅黑;line-height: 20px;padding-left:10px;">' + conPText.replace('>', '') + '</section>');
+				}
+			});
+			return conHtml;
+        }
+        // 黑白灰简洁模板
+        function templateSimple (conHtml) {
+        	conHtml = dealMarkdown(conHtml);
+        	var newStr, parentNode;
+        	conHtml.find('h1').each(function (index, el) {
+                $(this).replaceWith('<h1 style="font-family: 微软雅黑;margin-bottom: 10px;line-height: 1.4;font-weight: 400;font-size: 24px;">' + $(this).text() + '</h1>');
+            });
+			conHtml.find('h2, h3, h4, h5, h6, section[data-tag="title"]').each(function (index, el) {
+                newStr = '<section style="margin-right: auto; margin-left: auto; width: 94%;"><section style="margin-top: 2em; padding-top: 0.6em; padding-bottom: 0.5em;  font-size: 1em;  line-height: 22.4px; border-style: solid none none; border-top-width: 1px; border-color: rgb(204, 204, 204) rgb(117, 117, 118) rgb(117, 117, 118); text-decoration: inherit; color: rgb(117, 117, 118);"><section style="margin-top: -2.6em; text-align: center; line-height: 1.4;"><section style="display: inline-block; border: 1px solid rgb(117, 117, 118); color: inherit;  background-color: rgb(254, 254, 254);margin-top: 10px; margin-bottom: 10px;padding:8px 12px;font-size: 16px;"><span style="font-family: 微软雅黑;">' + $(this).text() + '</span></section></section></section></section>';
+                $(this).replaceWith('<section data-tag="title">' + newStr + '</section>');
+            });
+            conHtml.find('img').each(function(index, el) {
+                newStr = '<section style="text-align:center;margin:0px auto;" class="layout"><section style="width:80%;border-width:1px; border-style: solid;border-color:rgb(230,230,230);display: inline-block;"><section style="margin:15px; border-width:1px; border-style: solid; border-color:rgb(230,230,230);background-color:rgb(245,245,245)"><section style="margin:15px; border-color: rgb(198, 198, 199);line-height:0em;"><img src="'+$(this).attr('src')+'" alt="" style="width: 100%; margin: 0px; display: inline;" _src=""></section></section></section></section>';
+                parentNode = $(this).parents('section[data-tag="img"]');
+                if (parentNode.get(0)) {
+                    parentNode.replaceWith('<section data-tag="img">' + newStr + '</section>');
+                } else {
+                    $(this).replaceWith('<section data-tag="img">' + newStr + '</section>');
+                }
+            });
+            conHtml.find('section[data-tag="quote"]').each(function (index, el) {
+                $(this).css({
+                	'border-left': '4px solid #ccc'
+                });
+            });
+            return conHtml;
+        }
+        // 黄色高贵模板
+        function templateYellow (conHtml) {
+        	conHtml = dealMarkdown(conHtml);
+        	var newStr, parentNode;
+        	conHtml.find('h1').each(function (index, el) {
+                $(this).replaceWith('<h1 style="font-family: 微软雅黑;margin-bottom: 10px;line-height: 1.4;font-weight: 400;font-size: 24px;">' + $(this).text() + '</h1>');
+            });
+			conHtml.find('h2, h3, h4, h5, h6, section[data-tag="title"]').each(function (index, el) {
+                newStr = '<section class="layout" style="margin: 1em auto; border-top-width: 1px; border-top-style: solid; border-color: rgb(252, 180, 43); text-align: center; width: 80%; color: inherit; box-sizing: border-box;"><section style="min-height: 32px; color: rgb(255, 255, 255); display: inline-block; border-bottom-left-radius: 10px; padding: 5px 10px; border-bottom-right-radius: 10px; font-size: 20px; background-color: rgb(252, 180, 43); box-sizing: border-box;"><strong><span style="font-size: 18px; line-height: 27.986112594604492px; border-color: #FCB42B; border-top-style: solid; border-top-width: 1px; display: inline-block; width: 100%;">' + $(this).text() + '</span></strong></section></section>';
+                $(this).replaceWith('<section data-tag="title">' + newStr + '</section>');
+            });
+            conHtml.find('img').each(function(index, el) {
+                newStr = '<section style="width: 80%; text-align: center; padding-right: 5px; padding-left: 5px; margin:0 auto; box-sizing: border-box;"><section style="padding: 0.5em; border: 1px solid rgb(252, 180, 43); border-top-left-radius: 50%; border-top-right-radius: 50%; border-bottom-right-radius: 50%; border-bottom-left-radius: 50%; box-sizing: border-box;"><img src="'+$(this).attr('src')+'" style="width:100%;border-radius: 50%; display: block; visibility: visible !important;"></section></section>';
+                parentNode = $(this).parents('section[data-tag="img"]');
+                if (parentNode.get(0)) {
+                    parentNode.replaceWith('<section data-tag="img">' + newStr + '</section>');
+                } else {
+                    $(this).replaceWith('<section data-tag="img">' + newStr + '</section>');
+                }
+            });
+            conHtml.find('section[data-tag="quote"]').each(function (index, el) {
+                $(this).css({
+                	'border-left': '4px solid #FCB42B'
+                });
+            });
+            return conHtml;
+        }
+        // 粉色简洁模板
+        function templatePink (conHtml) {
+        	conHtml = dealMarkdown(conHtml);
+        	var newStr, parentNode;
+        	conHtml.find('h1').each(function (index, el) {
+                $(this).replaceWith('<h1 style="font-family: 微软雅黑;margin-bottom: 10px;line-height: 1.4;font-weight: 400;font-size: 24px;">' + $(this).text() + '</h1>');
+            });
+			conHtml.find('h2, h3, h4, h5, h6, section[data-tag="title"]').each(function (index, el) {
+			    newStr = '<section class="layout" style="margin: 10px auto; padding: 15px 5px;width:60%;border-top-style: solid; border-top-width: 1px; border-left-width: 0px; border-bottom-style: solid; border-bottom-width: 1px; line-height: 25px; color: rgb(239, 112, 96); text-align: center; border-color: rgb(191, 191, 191);font-size: 18px; color: rgb(242, 100, 124);"><span>' + $(this).text() + '</span></section>';
+			    $(this).replaceWith('<section data-tag="title">' + newStr + '</section>');
+			});
+			conHtml.find('img').each(function(index, el) {
+			    newStr = '<section style="text-align: center; margin-top: 10px;"><img src="'+$(this).attr('src')+'" style="width: 100%;" /></section>';
+			    parentNode = $(this).parents('section[data-tag="img"]');
+			    if (parentNode.get(0)) {
+			        parentNode.replaceWith('<section data-tag="img">' + newStr + '</section>');
+			    } else {
+			        $(this).replaceWith('<section data-tag="img">' + newStr + '</section>');
+			    }
+			});
+			conHtml.find('section[data-tag="quote"]').each(function (index, el) {
+                $(this).css({
+                	'border-left': '4px solid rgb(242, 100, 124)'
+                });
+            });
+            return conHtml;
+        }
+        // 渐变背景模板
+        function templateLinear (conHtml) {
+        	conHtml = dealMarkdown(conHtml);
+        	var newStr, parentNode;
+        	conHtml.find('h1').each(function (index, el) {
+                $(this).replaceWith('<h1 style="font-family: 微软雅黑;margin-bottom: 10px;line-height: 1.4;font-weight: 400;font-size: 24px;">' + $(this).text() + '</h1>');
+            });
+			var oldStr = conHtml.find('.onekey-con-wrap').html();
+			conHtml.find('.onekey-con-wrap').replaceWith('<section class="onekey-con-wrap" style="padding: 10px;"><section style="padding: 0px;background-image: -webkit-linear-gradient(left, rgb(253, 240, 230), rgb(255, 255, 250), rgb(253, 240, 230)); background-color: rgb(255, 255, 240);padding:10px;">' + oldStr + '</section></section>');
+		    conHtml.find('h2, h3, h4, h5, h6, section[data-tag="title"]').each(function (index, el) {
+		        newStr = '<section data-bcless="lighten" style="margin: 10px 0px;padding: 10px;line-height: 25px; color: rgb(255, 255, 255);font-size: 16px; box-shadow: rgb(153, 153, 153) 1px 1px 2px; border-left-style: solid; border-color: rgb(241, 148, 180); border-left-width: 20px; background-color: rgb(235, 103, 148);">' + $(this).text() + '</section>';
+		        $(this).replaceWith('<section data-tag="title">' + newStr + '</section>');
+		    });
+		    conHtml.find('img').each(function(index, el) {
+		        newStr = '<section style="text-align: center; margin-top: 10px;"><img src="'+$(this).attr('src')+'" style="width: 100%;" /></section>';
+		        parentNode = $(this).parents('section[data-tag="img"]');
+		        if (parentNode.get(0)) {
+		            parentNode.replaceWith('<section data-tag="img">' + newStr + '</section>');
+		        } else {
+		            $(this).replaceWith('<section data-tag="img">' + newStr + '</section>');
+		        }
+		    });
+		    conHtml.find('section[data-tag="quote"]').each(function (index, el) {
+                $(this).css({
+                	'border-left': '4px solid rgb(235, 103, 148)'
+                });
+            });
+            return conHtml;
+        }
         $(".tabs li a").on("click", function() {
             $(this).addClass("current").parent().siblings().each(function() {
                 $(this).find("a").removeClass("current")
             });
             $("#" + $(this).attr("tab")).show().siblings().hide()
-        })
+        });
     });
 </script>
 </body>
